@@ -3,6 +3,8 @@ import pandas as pd
 from streamlit_folium import folium_static
 import folium
 
+st.set_page_config(page_title='SupplySync', page_icon=':earth_americas:')
+
 @st.cache_data
 def load_data():
     data = pd.read_csv("Data/data.csv")
