@@ -5,7 +5,7 @@ import folium
 
 @st.cache_data
 def load_data():
-    data = pd.read_csv("data/data.csv")
+    data = pd.read_csv("Data/data.csv")
     return data
 df=load_data()
 
