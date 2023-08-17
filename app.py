@@ -7,7 +7,7 @@ st.set_page_config(page_title='SupplySync', page_icon=':earth_americas:')
 
 @st.cache_data
 def load_data():
-    data = pd.read_csv("Data/data.csv")
+    data = pd.read_csv("Data/Final_data.csv")
     return data
 df=load_data()
 
@@ -31,54 +31,68 @@ st.write('SupplySync is a tool to help you find the best possible locations to s
 
 st.write(f'### Please enter the following information to get started:')
 
-price=st.slider('Property Price', min_value=1990000, max_value=2155000, value=2040000)
-area=st.slider('Area', min_value=7150, max_value=20000, value=13000)
+price=st.slider('Property Price (Rs.)', min_value=85000, max_value=130000, value=106000)
+area=st.slider('Area (sq. km.)', min_value=4250, max_value=6500, value=5300)
 
-potential=0.0
-water_proximity=0.0
-road_proximity=0.0
-airport_proximity=0.0
-earthquake=0.0
-flood=0.0
-port_proximity=0.0
-hospital_proximity=0.0
+potential=df['potential_for_expansion'].max()
+water_proximity=df['proximity_to_major_water_body'].max()
+road_proximity=df['proximity_to_roadways'].max()
+airport_proximity=df['proximity_to_airports'].max()
+earthquake=df['earthquake_likelihood'].max()
+flood=df['flood_likelihood'].max()
+port_proximity=df['proximity_to_ports'].max()
+hospital_proximity=df['proximity_to_hospitals'].max()
+city_proximity=df['proximity_to_cities'].max()
 
+warehouse_type=st.selectbox('Select the type of warehouse you are looking for:', ('All','Industrial', 'Commercial', 'Logistics', 'Retail'))
 
+if warehouse_type=='All':
+    df=df
+elif warehouse_type=='Industrial':
+    df=df[df['warehouse_type']=='Industrial']
+elif warehouse_type=='Commercial':
+    df=df[df['warehouse_type']=='Commercial']
+elif warehouse_type=='Logistics':
+    df=df[df['warehouse_type']=='Logistics']
+elif warehouse_type=='Retail':
+    df=df[df['warehouse_type']=='Retail']
 
 #section that only opens if you click button to reveal the advanced options and reteract if you click again
 if st.radio("Would you like to see advanced options?", ('No', 'Yes')) == 'Yes':
-    potential=st.sidebar.slider('Potential for Expansion', min_value=0.0, max_value=1.0, value=0.5)
-    water_proximity=st.sidebar.slider('Proximity to Major Water Bodies', min_value=1.0, max_value=10.0, value=5.5)
-    road_proximity=st.sidebar.slider('Proximity to Roadways', min_value=1.0, max_value=10.0, value=4.5)
-    airport_proximity=st.sidebar.slider('Proximity to Airports', min_value=1.0, max_value=10.0, value=5.5)
-    earthquake=st.sidebar.slider('Earthquake Likelihood', min_value=0.0, max_value=1.0, value=0.5)
-    flood=st.sidebar.slider('Flood Likelihood', min_value=0.0, max_value=1.0, value=0.5)
-    port_proximity=st.sidebar.slider('Proximity to Ports', min_value=1.0, max_value=10.0, value=5.5)
-    hospital_proximity=st.sidebar.slider('Proximity to Hospitals', min_value=1.0, max_value=10.0, value=4.5)
+    potential=st.sidebar.slider('Potential for Expansion (Future returns in 2 years)', min_value=float(df['potential_for_expansion'].min()), max_value=float(df['potential_for_expansion'].max()), value=df['potential_for_expansion'].median())
+    water_proximity=st.sidebar.slider('Proximity to Major Water Bodies (km)', min_value=float(df['proximity_to_major_water_body'].min()), max_value=float(df['proximity_to_major_water_body'].max()), value=df['proximity_to_major_water_body'].median())
+    road_proximity=st.sidebar.slider('Proximity to Roadways (km)', min_value=float(df['proximity_to_roadways'].min()), max_value=float(df['proximity_to_roadways'].max()), value=df['proximity_to_roadways'].median())
+    airport_proximity=st.sidebar.slider('Proximity to Airports (km)', min_value=float(df['proximity_to_airports'].min()), max_value=float(df['proximity_to_airports'].max()), value=df['proximity_to_airports'].median())
+    earthquake=st.sidebar.slider('Earthquake Likelihood \n (Probability of 6+ Richter scale Earthquake)', min_value=float(df['earthquake_likelihood'].min()), max_value=float(df['earthquake_likelihood'].max()), value=df['earthquake_likelihood'].median())
+    flood=st.sidebar.slider('Flood Likelihood (Probability of major water body flooding)', min_value=float(df['flood_likelihood'].min()), max_value=float(df['flood_likelihood'].max()), value=df['flood_likelihood'].median())
+    port_proximity=st.sidebar.slider('Proximity to Ports (km)', min_value=float(df['proximity_to_ports'].min()), max_value=float(df['proximity_to_ports'].max()), value=df['proximity_to_ports'].median())
+    hospital_proximity=st.sidebar.slider('Proximity to Hospitals (km)', min_value=float(df['proximity_to_hospitals'].min()), max_value=float(df['proximity_to_hospitals'].max()), value=df['proximity_to_hospitals'].median())
+    city_proximity=st.sidebar.slider('Proximity to Major Cities (km)', min_value=float(df['proximity_to_cities'].min()), max_value=float(df['proximity_to_cities'].max()), value=df['proximity_to_cities'].median())
 else:
-    potential=0.0
-    water_proximity=0.0
-    road_proximity=0.0
-    airport_proximity=0.0
-    earthquake=0.0
-    flood=0.0
-    port_proximity=0.0
-    hospital_proximity=0.0
+    potential=df['potential_for_expansion'].max()
+    water_proximity=df['proximity_to_major_water_body'].max()
+    road_proximity=df['proximity_to_roadways'].max()
+    airport_proximity=df['proximity_to_airports'].max()
+    earthquake=df['earthquake_likelihood'].max()
+    flood=df['flood_likelihood'].max()
+    port_proximity=df['proximity_to_ports'].max()
+    hospital_proximity=df['proximity_to_hospitals'].max()
+    city_proximity=df['proximity_to_cities'].max()
     
 
 #filtering the data based on the user input to be around the selected factors
 
-df=df[(df['Price']<=price)]
-df=df[(df['Area']<=area)]
-df=df[(df['Potential_for_Expansion']>=potential)]
-df=df[(df['Proximity_to_Major_Water_Body']>=water_proximity)]
-df=df[(df['Proximity_to_Roadways']>=road_proximity)]
-df=df[(df['Proximity_to_Airports']>=airport_proximity)]
-df=df[(df['Earthquake_Likelihood']>=earthquake)]
-df=df[(df['Flood_Likelihood']>=flood)]
-df=df[(df['Proximity_to_Ports']>=port_proximity)]
-df=df[(df['Proximity_to_Hospitals']>=hospital_proximity)]
-df=df.sort_values(by=['Price'], ascending=False)
+df=df[(df['price']<=price)]
+df=df[(df['area']<=area)]
+df=df[(df['potential_for_expansion']<=potential)]
+df=df[(df['proximity_to_major_water_body']<=water_proximity)]
+df=df[(df['proximity_to_roadways']<=road_proximity)]
+df=df[(df['proximity_to_airports']<=airport_proximity)]
+df=df[(df['earthquake_likelihood']<=earthquake)]
+df=df[(df['flood_likelihood']<=flood)]
+df=df[(df['proximity_to_ports']<=port_proximity)]
+df=df[(df['proximity_to_hospitals']<=hospital_proximity)]
+df=df.sort_values(by=['price'], ascending=False)
 
 
 #displaying the data
