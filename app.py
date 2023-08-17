@@ -111,5 +111,5 @@ new_df=new_df[['latitude','longitude']]
 if len(new_df)>0: 
     map=folium.Map(location=[df['latitude'].mean(),df['longitude'].mean()],zoom_start=10)
     for i in range(0,len(new_df)):
-        folium.Marker([new_df.iloc[i]['latitude'],new_df.iloc[i]['longitude']],popup="Location "+str(i+1),icon=folium.Icon(color='red',icon='info-sign')).add_to(map)
+        folium.Marker([new_df.iloc[i]['latitude'],new_df.iloc[i]['longitude']],popup="Location "+str(i+1),icon=folium.Icon(color='blue')).add_to(map)
     folium_static(map)
